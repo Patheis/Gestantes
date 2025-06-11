@@ -1,0 +1,36 @@
+-- Tabela principal: Gestante
+CREATE TABLE gestante (
+    id_gestante INT AUTO_INCREMENT PRIMARY KEY,
+    nome_gestante VARCHAR(150) NOT NULL,
+    data_nasc DATE NOT NULL,
+    idade_gestante CHAR(3),
+    dum DATE,
+    telefone_gestante VARCHAR(15)
+);
+
+-- Tabela: Gestação
+CREATE TABLE gestacao (
+    id_gestacao INT AUTO_INCREMENT PRIMARY KEY,
+    fk_id_gestante INT NOT NULL,
+    data_parto_prevista DATE,
+    observacoes VARCHAR(45),
+    FOREIGN KEY (fk_id_gestante) REFERENCES gestante(id_gestante)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- Tabela: Exame Obstétrico
+CREATE TABLE exame_obstetrico (
+    id_exame_obstetrico INT AUTO_INCREMENT PRIMARY KEY,
+    data_exame_o DATE NOT NULL,
+    status TINYINT DEFAULT 1
+);
+
+-- Tabela: Exame Transnucal
+CREATE TABLE exame_transnucal (
+    id_exame_transnucal INT AUTO_INCREMENT PRIMARY KEY,
+    data_exame_t DATE NOT NULL,
+    status TINYINT DEFAULT 1
+);
+
+-- Tabela: Exames (centraliz
