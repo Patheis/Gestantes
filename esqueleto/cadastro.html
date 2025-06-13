@@ -17,7 +17,7 @@
       min-height: 100vh;
     }
 
-    header {
+    header, footer {
       background: #ffb6c1;
       color: white;
       padding: 30px;
@@ -167,7 +167,7 @@
         <input type="date" id="data_nasc" name="data_nasc" required>
 
         <label for="idade">Idade:</label>
-        <input type="text" id="idade" name="idade" maxlength="3">
+        <input type="text" id="idade" name="idade" maxlength="3" readonly>
 
         <label for="dum">DUM (Data da Última Menstruação):</label>
         <input type="date" id="dum" name="dum">
@@ -188,6 +188,67 @@
   </footer>
 
   <script>
+    
+    document.getElementById("data_nasc").addEventListener("change", function () {
+    const dataNascStr = this.value;
+    if (!dataNascStr) return;
+
+    const hoje = new Date();
+    const nasc = new Date(dataNascStr);
+
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const mesAtual = hoje.getMonth();
+    const mesNasc = nasc.getMonth();
+
+    // Ajuste se o mês/dia ainda não foi alcançado
+    if (
+      mesAtual < mesNasc ||
+      (mesAtual === mesNasc && hoje.getDate() < nasc.getDate())
+    ) {
+      idade--;
+    }
+
+    document.getElementById("idade").value = idade;
+  });
+
+     document.querySelector("form").addEventListener("submit", async (e) => {
+     e.preventDefault();
+
+    const nome_gestante = document.getElementById("nome").value;
+    const data_nasc = document.getElementById("data_nasc").value;
+    const idade_gestante = document.getElementById("idade").value;
+    const dum = document.getElementById("dum").value;
+    const telefone_gestante = document.getElementById("telefone").value;
+
+    try {
+      const response = await fetch("http://localhost:3001/gestantes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nome_gestante,
+          data_nasc,
+          idade_gestante,
+          dum,
+          telefone_gestante
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Cadastro realizado com sucesso!\n\n" + result.msg);
+        document.querySelector("form").reset(); // limpa os campos
+      } else {
+        alert("Erro ao cadastrar:\n\n" + result.error || result.msg);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao conectar com o servidor.");
+    }
+  });
+
     // Pequena animação ao carregar os inputs
     document.addEventListener("DOMContentLoaded", () => {
       const inputs = document.querySelectorAll('input');
@@ -201,6 +262,7 @@
         }, 150 * i);
       });
     });
+    
   </script>
 
 </body>

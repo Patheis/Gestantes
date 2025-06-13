@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home | Sistema de Gestantes</title>
+
+  <style>
+    /* ---------- base ---------- */
+    body{
+      font-family:'Segoe UI',sans-serif;
+      background:#fff0f5;
+      color:#333;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+    header, footer{
+      background:#ffb6c1;
+      color:#fff;
+      padding:30px;
+      text-align:center;
+      font-size:32px;
+      font-weight:bold;
+      text-shadow:2px 2px 4px #b34768;
+    }
+    main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
+    }
+    footer{
+      background:#ffb6c1;
+      text-align:center;
+      color:#fff;
+      padding:10px;
+      font-size:14px;
+    } 
+
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .image-container img {
+       width: 150px;
+       height: 150px;
+       object-fit: contain; /* mudou de cover para contain para evitar cortes */
+       border-radius: 40%;
+       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+       background: white;
+       padding: 12px;
+       transition: transform 0.4s ease;
+       border: 2px solid #ffb6c1;
+    }
+
+    .image-container img:hover {
+      transform: scale(1.08);
+    }
+
+    /* ---------- menu ---------- */
+    .menu-title{
+      font-size:28px;
+      font-weight:bold;
+      color:#ff2f6e;
+      text-shadow:2px 2px 4px #ffb6c1;
+      margin-bottom:35px;
+      text-align:center;
+    }
+    .menu-container{
+      display:flex;
+      flex-wrap:wrap;
+      gap:25px;
+      justify-content:center;
+    }
+    .menu-btn{
+      background:#ff69b4;
+      color:#fff;
+      border:none;
+      padding:18px 40px;
+      border-radius:12px;
+      font-size:18px;
+      font-weight:600;
+      cursor:pointer;
+      transition:.3s;
+      text-decoration:none; /* como será <a>, remove sublinhado */
+      box-shadow:0 0 10px rgba(0,0,0,.1);
+    }
+    .menu-btn:hover{
+      background:#ff1493;
+      transform:scale(1.07);
+    }
+
+    /* animação de entrada */
+    @keyframes slideUp{
+      from{transform:translateY(30px);opacity:0;}
+      to{transform:translateY(0);opacity:1;}
+    }
+    .menu-container,.menu-title{animation:slideUp 1s ease;}
+  </style>
+</head>
+<body>
+
+  <header>Sistema de Cadastro de Gestantes</header>
+
+  <main>
+    <div class="image-container">
+      <img src="https://img.freepik.com/vetores-gratis/ilustracao-de-desenho-de-mulher-gravida-desenhada-de-mao_23-2150452532.jpg?semt=ais_hybrid&w=740" alt="Logo Rede Cegonha">
+      <img src="https://sapl.mococa.sp.leg.br/media/sapl/public/casa/logotipo/logo_mococa.jpg" alt="Logo Prefeitura">
+    </div>
+
+    <h2 class="menu-title">Bem‑vinda! Escolha a ação desejada</h2>
+
+    <div class="menu-container">
+      <a class="menu-btn" href="cadastro.html">Cadastro</a>
+      <a class="menu-btn" href="consulta.html">Consulta</a>
+      <a class="menu-btn" href="alterar.html">Alterar</a>
+      <a class="menu-btn" href="excluir.html">Excluir</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Sistema de Gestantes. Todos os direitos reservados.
+  </footer>
+
+</body>
+</html>

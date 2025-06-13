@@ -33,4 +33,19 @@ CREATE TABLE exame_transnucal (
     status TINYINT DEFAULT 1
 );
 
--- Tabela: Exames (centraliz
+-- Tabela: Exames (centraliza exames de uma gestação)
+CREATE TABLE exames (
+    id_exame INT AUTO_INCREMENT PRIMARY KEY,
+    fk_id_exame_obstetrico INT,
+    fk_id_exame_transnucal INT,
+    fk_id_gestacao INT NOT NULL,
+    FOREIGN KEY (fk_id_exame_obstetrico) REFERENCES exame_obstetrico(id_exame_obstetrico)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (fk_id_exame_transnucal) REFERENCES exame_transnucal(id_exame_transnucal)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (fk_id_gestacao) REFERENCES gestacao(id_gestacao)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);

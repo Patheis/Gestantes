@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alterar Gestante</title>
+  <style>
+    body {
+      font-family:'Segoe UI',sans-serif;
+      background:#fff0f5;
+      color:#333;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+    header,footer {
+      background:#ffb6c1;
+      color:#fff;
+      text-align:center;
+      padding:30px;
+      font-weight:bold;
+      text-shadow:2px 2px 4px #b34768;
+    }
+    header { font-size:32px }
+    footer { font-size:14px; padding:10px }
+    main {
+      flex:1;
+      padding:40px 20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+
+    h2 {
+      color:#ff2f6e;
+      margin-bottom:30px;
+      text-shadow:2px 2px 4px #ffb6c1;
+    }
+
+    form {
+      background:#fff;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 0 12px rgba(0,0,0,.1);
+      display:grid;
+      gap:20px;
+      width:100%;
+      max-width:500px;
+    }
+
+    label {
+      font-weight:bold;
+    }
+
+    input, select {
+      padding:10px;
+      font-size:16px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      width:100%;
+    }
+
+    button {
+      background:#ff69b4;
+      color:#fff;
+      border:none;
+      padding:12px;
+      font-size:16px;
+      border-radius:8px;
+      cursor:pointer;
+      transition:.3s;
+    }
+
+    button:hover {
+      background:#ff1493;
+    }
+  </style>
+</head>
+<body>
+
+<header>Alterar Gestante</header>
+
+<main>
+  <h2>Atualização dos Dados</h2>
+
+  <form id="formAlterar">
+    <input type="hidden" id="idGestante" />
+
+    <div>
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" required />
+    </div>
+
+    <div>
+      <label for="nascimento">Data de Nascimento:</label>
+      <input type="date" id="nascimento" required />
+    </div>
+
+    <div>
+      <label for="exameObst">Exame Obstétrico:</label>
+      <input type="date" id="exameObst" />
+    </div>
+
+    <div>
+      <label for="statusObst">Status Obstétrico:</label>
+      <select id="statusObst">
+        <option value="Ativo">Ativo</option>
+        <option value="Inativo">Inativo</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="exameTrans">Exame Transnucal:</label>
+      <input type="date" id="exameTrans" />
+    </div>
+
+    <div>
+      <label for="statusTrans">Status Transnucal:</label>
+      <select id="statusTrans">
+        <option value="Ativo">Ativo</option>
+        <option value="Inativo">Inativo</option>
+      </select>
+    </div>
+
+    <button type="submit">Alterar</button>
+    <button type="button" class="btn" onclick="window.history.back()">Voltar</button>
+  </form>
+</main>
+
+<footer>
+  &copy; 2025 Sistema de Gestantes. Todos os direitos reservados.
+</footer>
+
+<script>
+// Captura o ID da gestante via URL
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+document.getElementById("idGestante").value = id;
+
+// Simulação: preenchimento automático (isso deve vir de uma requisição futura)
+function preencherFormularioFake(){
+  if (id === "1") {
+    document.getElementById("nome").value = "Maria Silva";
+    document.getElementById("nascimento").value = "1994-05-12";
+    document.getElementById("exameObst").value = "2025-03-10";
+    document.getElementById("statusObst").value = "Ativo";
+    document.getElementById("exameTrans").value = "2025-03-22";
+    document.getElementById("statusTrans").value = "Ativo";
+  }
+  if (id === "2") {
+    document.getElementById("nome").value = "Luciana Costa";
+    document.getElementById("nascimento").value = "1998-01-30";
+    document.getElementById("exameObst").value = "2025-04-18";
+    document.getElementById("statusObst").value = "Ativo";
+    document.getElementById("exameTrans").value = "2025-04-30";
+    document.getElementById("statusTrans").value = "Ativo";
+  }
+}
+
+preencherFormularioFake(); // remover isso depois que integrar com backend
+
+document.getElementById("formAlterar").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const dados = {
+    id: document.getElementById("idGestante").value,
+    nome: document.getElementById("nome").value,
+    nascimento: document.getElementById("nascimento").value,
+    exameObst: document.getElementById("exameObst").value,
+    statusObst: document.getElementById("statusObst").value,
+    exameTrans: document.getElementById("exameTrans").value,
+    statusTrans: document.getElementById("statusTrans").value
+  };
+
+  console.log("Dados a serem enviados para o backend:", dados);
+
+  // Aqui você pode fazer o fetch/axios POST para API de atualização.
+  // Exemplo:
+  // fetch("/api/gestante/atualizar", {
+  //   method: "PUT",
+  //   headers: { "Content-Type": "application/json" },
+  //   body: JSON.stringify(dados)
+  // })
+
+  alert("Dados atualizados com sucesso!");
+});
+</script>
+
+</body>
+</html>

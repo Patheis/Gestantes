@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Excluir | Sistema de Gestantes</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff0f5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header, footer {
+      background: #ffb6c1;
+      color: white;
+      text-align: center;
+      padding: 30px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px #b34768;
+    }
+
+    header {
+      font-size: 32px;
+    }
+
+    footer {
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    main {
+      flex: 1;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .excluir-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff2f6e;
+      text-shadow: 2px 2px 4px #ffb6c1;
+      margin-bottom: 25px;
+      text-align: center;
+      animation: slideUp 1s ease;
+    }
+
+    .busca {
+      margin-bottom: 25px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      animation: slideUp 1s ease;
+    }
+
+    .busca input {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      min-width: 240px;
+    }
+
+    .busca button {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .busca button:hover {
+      background: #ff1493;
+    }
+
+    .gestante-table {
+      width: 100%;
+      max-width: 1000px;
+      border-collapse: collapse;
+      animation: slideUp 1s ease;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .gestante-table th, .gestante-table td {
+      padding: 14px;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .gestante-table th {
+      background: #ffb6c1;
+      color: white;
+    }
+
+    .gestante-table tr:nth-child(even) {
+      background: #ffe6ee;
+    }
+
+    .acao.excluir {
+      font-size: 20px;
+      color: #dc3545;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+
+    .acao.excluir:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>Sistema de Cadastro de Gestantes</header>
+
+  <main>
+    <h2 class="excluir-title">Excluir Cadastro de Gestantes</h2>
+
+    <div class="busca">
+      <input type="text" id="buscaInput" placeholder="Pesquisar por nome...">
+      <button onclick="filtrar()">Buscar</button>
+      <button type="button" onclick="window.history.back()">Voltar</button>
+    </div>
+
+    <table class="gestante-table" id="tabelaGestante">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Data Nasc.</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Maria Silva</td>
+          <td>12/05/1994</td>
+          <td><a href="#" class="acao excluir" onclick="confirmarExclusao(this, 'Maria Silva')">&#10060;</a></td>
+        </tr>
+        <tr>
+          <td>Luciana Costa</td>
+          <td>30/01/1998</td>
+          <td><a href="#" class="acao excluir" onclick="confirmarExclusao(this, 'Luciana Costa')">&#10060;</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <footer>
+    &copy; 2025 Sistema de Gestantes. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    function filtrar() {
+      const termo = document.getElementById('buscaInput').value.toLowerCase();
+      const linhas = document.querySelectorAll('#tabelaGestante tbody tr');
+      linhas.forEach(l => {
+        const nome = l.cells[0].innerText.toLowerCase();
+        l.style.display = nome.includes(termo) ? '' : 'none';
+      });
+    }
+
+    function confirmarExclusao(elemento, nome) {
+      const confirmar = confirm(`Deseja realmente excluir o cadastro de ${nome}?`);
+      if (confirmar) {
+        const linha = elemento.closest('tr');
+        linha.remove(); // Remove a linha da tabela
+        alert(`Cadastro de ${nome} excluído com sucesso!`);
+      }
+    }
+  </script>
+
+</body>
+</html>
