@@ -1,0 +1,119 @@
+body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff0f5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header, footer {
+      background: #ffb6c1;
+      color: white;
+      text-align: center;
+      padding: 30px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px #b34768;
+    }
+
+    header {
+      font-size: 32px;
+    }
+
+    footer {
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    main {
+      flex: 1;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .excluir-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff2f6e;
+      text-shadow: 2px 2px 4px #ffb6c1;
+      margin-bottom: 25px;
+      text-align: center;
+      animation: slideUp 1s ease;
+    }
+
+    .busca {
+      margin-bottom: 25px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      animation: slideUp 1s ease;
+    }
+
+    .busca input {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      min-width: 240px;
+    }
+
+    .busca button {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .busca button:hover {
+      background: #ff1493;
+    }
+
+    .gestante-table {
+      width: 100%;
+      max-width: 1000px;
+      border-collapse: collapse;
+      animation: slideUp 1s ease;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .gestante-table th, .gestante-table td {
+      padding: 14px;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .gestante-table th {
+      background: #ffb6c1;
+      color: white;
+    }
+
+    .gestante-table tr:nth-child(even) {
+      background: #ffe6ee;
+    }
+
+    .acao.excluir {
+      font-size: 20px;
+      color: #dc3545;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+
+    .acao.excluir:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
