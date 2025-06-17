@@ -133,9 +133,9 @@ export default function Cadastro() {
             />
 
             <div className="button-container">
-              <button type="button" className="btn" onClick={() => window.history.back()}>
+              <a href="/"><button type="button" className="btn" >
                 Voltar
-              </button>
+              </button> </a>
               <button type="submit" className="btn">
                 Cadastrar
               </button>
@@ -144,9 +144,7 @@ export default function Cadastro() {
         </div>
       </main>
 
-      <footer>
-        &copy; 2025 Sistema de Gestantes. Todos os direitos reservados.
-      </footer>
+
     </div>
   );
 }

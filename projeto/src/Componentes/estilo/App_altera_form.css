@@ -4,7 +4,7 @@ body {
       color:#333;
       margin:0;
       padding:0;
-      display:flex;
+      
       flex-direction:column;
       min-height:100vh;
     }
@@ -21,16 +21,11 @@ body {
     main {
       flex:1;
       padding:40px 20px;
-      display:flex;
+      
       flex-direction:column;
       align-items:center;
     }
 
-    h2 {
-      color:#ff2f6e;
-      margin-bottom:30px;
-      text-shadow:2px 2px 4px #ffb6c1;
-    }
 
     form {
       background:#fff;
@@ -64,8 +59,32 @@ body {
       border-radius:8px;
       cursor:pointer;
       transition:.3s;
+      align-items: right;
     }
 
     button:hover {
       background:#ff1493;
+    }
+
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+    }
+
+    .btn {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #ff1493;
+      transform: scale(1.05);
     }

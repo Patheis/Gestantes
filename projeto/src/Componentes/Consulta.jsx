@@ -30,9 +30,9 @@ const AppConsulta = () => {
         <div className="busca">
           <input type="text" id="buscaInput" placeholder="Pesquisar gestante..." />
           <button onClick={filtrar}>Buscar</button>
-          <button type="button" className="btn" onClick={() => window.history.back()}>
-            Voltar
-          </button>
+          <a href="/"><button type="button" className="btn" >
+                Voltar
+              </button> </a>
         </div>
 
         <table className="gestante-table" id="tabelaGestante">
@@ -87,7 +87,6 @@ const AppConsulta = () => {
         </table>
       </main>
 
-      <footer>&copy; 2025 Sistema de Gestantes. Todos os direitos reservados.</footer>
     </div>
   );
 };
