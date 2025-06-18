@@ -17,7 +17,7 @@ const AppAltera = () => {
   const editarGestante = (id, nome) => {
     const confirmar = window.confirm(`Deseja alterar o cadastro da gestante ${nome}?`);
     if (confirmar) {
-      navigate(`/alterar-formulario?id=${id}`);
+      navigate(`/alterar-formulario/${id}`);
     }
   };
 

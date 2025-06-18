@@ -24,7 +24,7 @@ export default function Home() {
           <a className="menu-btn" href="/consulta">Consulta</a>
           <a className="menu-btn" href="/alterar">Alterar</a>
           <a className="menu-btn" href="/excluir">Excluir</a>
-          //<a className="menu-btn" href="/alterar-formulario">Aa</a>
+         
         </div>
       </main>
 

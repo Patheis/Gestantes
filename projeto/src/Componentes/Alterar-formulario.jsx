@@ -44,7 +44,7 @@ export default function AlterarFormulario() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:3001/gestantes/${id_gestante}`)
+    fetch(`http://localhost:3001/gestantes/${id}`)
       .then((r) => {
         if (!r.ok) throw new Error("Gestante não encontrada");
         return r.json();
@@ -101,7 +101,7 @@ export default function AlterarFormulario() {
       ...datas,
     };
 
-    fetch(`http://localhost:3001/gestante/${dados.id}`, {
+    fetch(`http://localhost:3001/gestantes/${dados.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -127,7 +127,7 @@ export default function AlterarFormulario() {
 
           <div>
             <label htmlFor="nome">Nome:</label>
-            <input id="nome" value={dados.nome_gestante} onChange={handleChange} required />
+            <input id="nome" value={dados.nome} onChange={handleChange} required />
           </div>
 
           <div>
@@ -147,7 +147,7 @@ export default function AlterarFormulario() {
 
           <div>
             <label htmlFor="exameObst">Exame Obstétrico:</label>
-            <input type="date" id="exameObst" value={dados.exameObst} onChange={handleChange} />
+            <input type="date" id="exameObst" value={dados.exameObst} onChange={handleChange} readOnly/>
           </div>
 
           <div>
@@ -160,7 +160,7 @@ export default function AlterarFormulario() {
 
           <div>
             <label htmlFor="exameTrans">Exame Transnucal:</label>
-            <input type="date" id="exameTrans" value={dados.exameTrans} onChange={handleChange} />
+            <input type="date" id="exameTrans" value={dados.exameTrans} onChange={handleChange} readOnly/>
           </div>
 
           <div>

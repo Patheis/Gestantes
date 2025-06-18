@@ -21,7 +21,7 @@ export default function App()
         <Route path="/consulta" element={<Consulta />} />
         <Route path="/alterar" element={<Alterar />} />
         <Route path="/excluir" element={<Excluir />} />
-        <Route path="/alterar-formulario" element={<AlterarFormulario />} />
+        <Route path="/alterar-formulario/:id" element={<AlterarFormulario />} />
       </Routes>
       
     </BrowserRouter>

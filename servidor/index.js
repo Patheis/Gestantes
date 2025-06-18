@@ -161,34 +161,66 @@ app.post("/gestantes", (req, res) => {
 
 
 /* ─── PUT /gestantes/:id ─────────────────────────────────────── */
-app.put("/gestante/:id", (req, res) => {
-  const id = req.params.id;
+app.put('/gestantes/:id', (req, res) => {
+  const { id } = req.params;
   const {
-    nome, nascimento, dum, exameObst, statusObst,
-    exameTrans, statusTrans,
-    partoPrevista, transIni, transFim, obstIni, obstFim
+    nome_gestante,
+    data_nasc,
+    dum,
+    data_exame_o,
+    status_obstetrico,
+    data_exame_t,
+    status_transnucal,
+    partoPrevista,
+    transIni,
+    transFim,
+    obstIni,
+    obstFim,
   } = req.body;
 
   const sql = `
     UPDATE gestantes SET
-      nome = ?, nascimento = ?, dum = ?, exame_obst = ?, status_obst = ?,
-      exame_trans = ?, status_trans = ?,
-      data_parto_prevista = ?, data_trans_ini = ?, data_trans_fim = ?,
-      data_obst_ini = ?, data_obst_fim = ?
-    WHERE id = ?`;
+      nome_gestante = ?,
+      data_nasc = ?,
+      dum = ?,
+      data_exame_o = ?,
+      status_obstetrico = ?,
+      data_exame_t = ?,
+      status_transnucal = ?,
+      partoPrevista = ?,
+      transIni = ?,
+      transFim = ?,
+      obstIni = ?,
+      obstFim = ?
+    WHERE id_gestante = ?
+  `;
 
-  const valores = [
-    nome, nascimento, dum, exameObst, statusObst,
-    exameTrans, statusTrans,
-    partoPrevista, transIni, transFim, obstIni, obstFim,
+  const values = [
+    nome_gestante,
+    data_nasc,
+    dum,
+    data_exame_o,
+    status_obstetrico,
+    data_exame_t,
+    status_transnucal,
+    partoPrevista,
+    transIni,
+    transFim,
+    obstIni,
+    obstFim,
     id
   ];
 
-  db.query(sql, valores, (err, result) => {
-    if (err) return res.status(500).json({ erro: err });
-    res.json({ mensagem: "Atualizado com sucesso" });
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Erro ao atualizar gestante:", err);
+      res.status(500).json({ erro: "Erro ao atualizar" });
+    } else {
+      res.status(200).json({ mensagem: "Gestante atualizada com sucesso" });
+    }
   });
 });
+
 
 /* ─── PATCH /gestantes/:id/status ────────────────────────────── */
 app.patch("/gestantes/:id/status", (req, res) => {
