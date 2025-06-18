@@ -161,20 +161,33 @@ app.post("/gestantes", (req, res) => {
 
 
 /* ─── PUT /gestantes/:id ─────────────────────────────────────── */
-app.put("/gestantes/:id", (req, res) => {
-  const { id } = req.params;
-  const { nome_gestante, data_nasc, idade_gestante, dum, telefone_gestante } = req.body;
+app.put("/gestante/:id", (req, res) => {
+  const id = req.params.id;
+  const {
+    nome, nascimento, dum, exameObst, statusObst,
+    exameTrans, statusTrans,
+    partoPrevista, transIni, transFim, obstIni, obstFim
+  } = req.body;
+
   const sql = `
-    UPDATE gestante SET nome_gestante=?, data_nasc=?, idade_gestante=?, dum=?, telefone_gestante=?
-    WHERE id_gestante=?`;
-  db.query(sql, [nome_gestante, data_nasc, idade_gestante, dum, telefone_gestante, id],
-    (err, result) =>
-      err
-        ? res.status(500).json({ error: err })
-        : result.affectedRows
-        ? res.json({ msg: "Atualizado com sucesso" })
-        : res.status(404).json({ msg: "Gestante não encontrada" })
-  );
+    UPDATE gestantes SET
+      nome = ?, nascimento = ?, dum = ?, exame_obst = ?, status_obst = ?,
+      exame_trans = ?, status_trans = ?,
+      data_parto_prevista = ?, data_trans_ini = ?, data_trans_fim = ?,
+      data_obst_ini = ?, data_obst_fim = ?
+    WHERE id = ?`;
+
+  const valores = [
+    nome, nascimento, dum, exameObst, statusObst,
+    exameTrans, statusTrans,
+    partoPrevista, transIni, transFim, obstIni, obstFim,
+    id
+  ];
+
+  db.query(sql, valores, (err, result) => {
+    if (err) return res.status(500).json({ erro: err });
+    res.json({ mensagem: "Atualizado com sucesso" });
+  });
 });
 
 /* ─── PATCH /gestantes/:id/status ────────────────────────────── */

@@ -1,21 +1,37 @@
 import './estilo/App_altera.css';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AppAltera = () => {
+  const [gestantes, setGestantes] = useState([]);
+  const [filtroInput, setFiltroInput] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('http://localhost:3001/gestantes')
+      .then(res => res.json())
+      .then(data => setGestantes(data))
+      .catch(err => console.error("Erro ao buscar gestantes:", err));
+  }, []);
 
   const editarGestante = (id, nome) => {
     const confirmar = window.confirm(`Deseja alterar o cadastro da gestante ${nome}?`);
     if (confirmar) {
-      window.location.href = `alterar-formulario.jsx?id=${id}`;
+      navigate(`/alterar-formulario?id=${id}`);
     }
   };
 
-  const filtrar = () => {
-    const termo = document.getElementById('buscaInput').value.toLowerCase();
-    const linhas = document.querySelectorAll('#tabelaAlterar tbody tr');
-    linhas.forEach((linha) => {
-      const nome = linha.cells[0].innerText.toLowerCase();
-      linha.style.display = nome.includes(termo) ? '' : 'none';
-    });
+  const gestantesFiltradas = gestantes.filter(g =>
+    g.nome_gestante.toLowerCase().includes(filtroInput.toLowerCase())
+  );
+
+  const formatarData = (dataStr) => {
+    if (!dataStr || dataStr === "0000-00-00") return "-";
+    const data = new Date(dataStr);
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
   };
 
   return (
@@ -33,40 +49,48 @@ const AppAltera = () => {
             alt="Logo Prefeitura"
           />
         </div>
+
         <h2 className="titulo-alterar">Alterar Dados de Gestantes</h2>
 
         <div className="busca">
-          <input type="text" id="buscaInput" placeholder="Pesquisar por nome..." />
-          <button onClick={filtrar}>Buscar</button>
+          <input
+            type="text"
+            id="buscaInput"
+            placeholder="Pesquisar por nome..."
+            value={filtroInput}
+            onChange={(e) => setFiltroInput(e.target.value)}
+          />
+          
           <a href="/"><button type="button" className="btn">Voltar</button></a>
         </div>
 
         <table className="alterar-table" id="tabelaAlterar">
           <thead>
             <tr>
+              <th>Codigo</th>
               <th>Nome</th>
               <th>Data Nasc.</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Maria Silva</td>
-              <td>12/05/1994</td>
-              <td>
-                <button className="editar-btn" onClick={() => editarGestante(1, 'Maria Silva')}>✏️</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Luciana Costa</td>
-              <td>30/01/1998</td>
-              <td>
-                <button className="editar-btn" onClick={() => editarGestante(2, 'Luciana Costa')}>✏️</button>
-              </td>
-            </tr>
+            {gestantesFiltradas.map(g => (
+              <tr key={g.id_gestante}>
+                <td>{g.id_gestante}</td>
+                <td>{g.nome_gestante}</td>
+                <td>{formatarData(g.data_nasc)}</td>
+                <td>
+                  <button
+                    onClick={() => editarGestante(g.id_gestante, g.nome_gestante)}
+                    className="icone-editar"
+                  >
+                    ✏️
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
-        
       </main>
     </div>
   );
