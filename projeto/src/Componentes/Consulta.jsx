@@ -1,14 +1,35 @@
 import './estilo/App_consulta.css';
+import { useEffect, useState } from 'react';
 
 const AppConsulta = () => {
+  const [gestantes, setGestantes] = useState([]);
+  const [filtroInput, setFiltroInput] = useState("");
+  const [filtroAplicado, setFiltroAplicado] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:3001/gestantes")
+      .then(res => res.json())
+      .then(data => setGestantes(data))
+      .catch(err => console.error("Erro ao buscar gestantes:", err));
+  }, []);
+
   const filtrar = () => {
-    const termo = document.getElementById('buscaInput').value.toLowerCase();
-    const linhas = document.querySelectorAll('#tabelaGestante tbody tr');
-    linhas.forEach(linha => {
-      const nome = linha.cells[0].innerText.toLowerCase();
-      linha.style.display = nome.includes(termo) ? '' : 'none';
-    });
+    setFiltroAplicado(filtroInput);
   };
+
+  const gestantesFiltradas = gestantes.filter((g) =>
+    g.nome_gestante.toLowerCase().includes(filtroAplicado.toLowerCase())
+  );
+
+  const formatarData = (dataStr) => {
+  if (!dataStr || dataStr === "0000-00-00") return "-";
+  const data = new Date(dataStr);
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+};
+
 
   return (
     <div className="consulta-wrapper">
@@ -25,14 +46,21 @@ const AppConsulta = () => {
             alt="Logo Prefeitura"
           />
         </div>
+
         <p className="consulta-title">Consulta de Gestantes e Exames</p>
 
         <div className="busca">
-          <input type="text" id="buscaInput" placeholder="Pesquisar gestante..." />
+          <input
+            type="text"
+            id="buscaInput"
+            placeholder="Pesquisar gestante..."
+            value={filtroInput}
+            onChange={(e) => setFiltroInput(e.target.value)}
+          />
           <button onClick={filtrar}>Buscar</button>
-          <a href="/"><button type="button" className="btn" >
-                Voltar
-              </button> </a>
+          <a href="/">
+            <button type="button" className="btn">Voltar</button>
+          </a>
         </div>
 
         <table className="gestante-table" id="tabelaGestante">
@@ -45,48 +73,35 @@ const AppConsulta = () => {
               <th>Status Obst.</th>
               <th>Exame Transnucal</th>
               <th>Status Trans.</th>
-              <th>Observacao</th>
+              <th>Observação</th>
               <th>Data prevista</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Maria Silva</td>
-              <td>12/05/1994</td>
-              <td>199999999</td>
-              <td>10/03/2025</td>
-              <td><span className="badge ativo">Ativo</span></td>
-              <td>22/03/2025</td>
-              <td><span className="badge ativo">Ativo</span></td>
-              <td>Risco</td>
-              <td>10/12/2025</td>
-            </tr>
-            <tr>
-              <td>Ana Souza</td>
-              <td>08/11/1990</td>
-              <td>199999999</td>
-              <td>05/02/2025</td>
-              <td><span className="badge inativo">Inativo</span></td>
-              <td>-</td>
-              <td><span className="badge inativo">Inativo</span></td>
-              <td>Alto Risco</td>
-              <td>10/12/2025</td>
-            </tr>
-            <tr>
-              <td>Luciana Costa</td>
-              <td>30/01/1998</td>
-              <td>199999999</td>
-              <td>18/04/2025</td>
-              <td><span className="badge ativo">Ativo</span></td>
-              <td>30/04/2025</td>
-              <td><span className="badge ativo">Ativo</span></td>
-              <td>Risco</td>
-              <td>10/12/2025</td>
-            </tr>
+            {gestantesFiltradas.map((g) => (
+              <tr key={g.id_gestante}>
+                <td>{g.nome_gestante}</td>
+                <td>{formatarData(g.data_nasc)}</td>
+                <td>{g.telefone_gestante}</td>
+                <td>{formatarData(g.data_exame_o)}</td>
+                <td>
+                  <span className={`badge ${g.status_obstetrico ? 'ativo' : 'inativo'}`}>
+                    {g.status_obstetrico ? "Ativo" : "Inativo"}
+                  </span>
+                </td>
+                <td>{formatarData(g.data_exame_t)}</td>
+                <td>
+                  <span className={`badge ${g.status_transnucal ? 'ativo' : 'inativo'}`}>
+                    {g.status_transnucal ? "Ativo" : "Inativo"}
+                  </span>
+                </td>
+                <td>{g.observacao || '-'}</td>
+                <td>{formatarData(g.data_parto_prevista)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </main>
-
     </div>
   );
 };

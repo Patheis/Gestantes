@@ -9,6 +9,7 @@ export default function Cadastro() {
     idade: "",
     dum: "",
     telefone: "",
+    observacao:""
   });
 
   useEffect(() => {
@@ -47,6 +48,8 @@ export default function Cadastro() {
           idade_gestante: formData.idade,
           dum: formData.dum,
           telefone_gestante: formData.telefone,
+          observacao: formData.observacao
+          
         }),
       });
 
@@ -54,7 +57,7 @@ export default function Cadastro() {
 
       if (response.ok) {
         alert("Cadastro realizado com sucesso!\n\n" + result.msg);
-        setFormData({ nome: "", data_nasc: "", idade: "", dum: "", telefone: "" });
+        setFormData({ nome: "", data_nasc: "", idade: "", dum: "", telefone: "", observacao: "" });
       } else {
         alert("Erro ao cadastrar:\n\n" + (result.error || result.msg));
       }
@@ -113,7 +116,7 @@ export default function Cadastro() {
               value={formData.idade}
               readOnly
             />
-
+            
             <label htmlFor="dum">DUM (Data da Última Menstruação):</label>
             <input
               type="date"
@@ -131,6 +134,11 @@ export default function Cadastro() {
               value={formData.telefone}
               onChange={handleChange}
             />
+            
+            <label htmlFor="observacao">Observacao:</label>
+            <input type="text" id="observacao" name="observacao" value={formData.observacao} onChange={handleChange}/>
+
+
 
             <div className="button-container">
               <a href="/"><button type="button" className="btn" >

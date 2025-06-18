@@ -45,12 +45,44 @@ const calcularDatas = (dum) => ({
   obstFim      : addDays(dum, 168)
 });
 
+
+
 /* ─── GET /gestantes ─────────────────────────────────────────── */
-app.get("/gestantes", (_, res) => {
-  db.query("SELECT * FROM gestante", (err, rows) =>
-    err ? res.status(500).json({ error: err }) : res.json(rows)
-  );
+app.get("/gestantes", (req, res) => {
+  const sql = `
+    SELECT 
+      g.id_gestante,
+      g.nome_gestante,
+      g.data_nasc,
+      g.telefone_gestante,
+      
+      gest.data_parto_prevista,
+      gest.observacoes AS observacao,
+      
+      eo.data_exame_o,
+      eo.status AS status_obstetrico,
+      
+      et.data_exame_t,
+      et.status AS status_transnucal
+
+    FROM gestante g
+    LEFT JOIN gestacao gest ON gest.fk_id_gestante = g.id_gestante
+    LEFT JOIN exames ex ON ex.fk_id_gestacao = gest.id_gestacao
+    LEFT JOIN exame_obstetrico eo ON eo.id_exame_obstetrico = ex.fk_id_exame_obstetrico
+    LEFT JOIN exame_transnucal et ON et.id_exame_transnucal = ex.fk_id_exame_transnucal
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar gestantes com exames:", err);
+      return res.status(500).json({ error: "Erro ao buscar gestantes" });
+    }
+    res.json(results);
+  });
 });
+
+
+
 
 /* ─── GET /gestantes/:id ─────────────────────────────────────── */
 app.get("/gestantes/:id", (req, res) => {
@@ -73,11 +105,11 @@ app.get("/gestantes/:id", (req, res) => {
   );
 });
 
-/* ─── POST /gestantes ─────────────────────────────────────────── */
 app.post("/gestantes", (req, res) => {
-  const { nome_gestante, data_nasc, idade_gestante, dum, telefone_gestante } = req.body;
+  const { nome_gestante, data_nasc, idade_gestante, dum, telefone_gestante, observacao } = req.body;
 
   const datas = calcularDatas(dum);
+
   const sqlGestante = `
     INSERT INTO gestante (nome_gestante, data_nasc, idade_gestante, dum, telefone_gestante)
     VALUES (?, ?, ?, ?, ?)
@@ -88,14 +120,16 @@ app.post("/gestantes", (req, res) => {
 
     const idGestante = gestanteResult.insertId;
 
+    // Aqui já inclui o campo observacoes na tabela gestacao
     db.query(
-      "INSERT INTO gestacao (fk_id_gestante, data_parto_prevista) VALUES (?, ?)",
-      [idGestante, datas.partoPrevista],
+      "INSERT INTO gestacao (fk_id_gestante, data_parto_prevista, observacoes) VALUES (?, ?, ?)",
+      [idGestante, datas.partoPrevista, observacao || null],  // Se não passar observação, null
       (err, gestacaoResult) => {
         if (err) return res.status(500).json({ error: "Erro ao inserir gestação" });
 
         const idGestacao = gestacaoResult.insertId;
 
+        // Continua o fluxo dos exames (sem alterações)
         db.query("INSERT INTO exame_transnucal (data_exame_t, status) VALUES (?, 0)", [datas.transIni], (err, transRes) => {
           if (err) return res.status(500).json({ error: "Erro no exame transnucal" });
           const idTrans = transRes.insertId;
@@ -124,6 +158,7 @@ app.post("/gestantes", (req, res) => {
     );
   });
 });
+
 
 /* ─── PUT /gestantes/:id ─────────────────────────────────────── */
 app.put("/gestantes/:id", (req, res) => {
