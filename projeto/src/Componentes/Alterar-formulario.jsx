@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { addDays, parseISO } from "date-fns";
 import "./estilo/App_altera_form.css";
 
-/* ─ util para recalcular datas a partir da DUM ─ */
 const calcularDatas = (dum) => ({
   partoPrevista: addDays(parseISO(dum), 280),
   transIni:      addDays(parseISO(dum), 77),
@@ -12,7 +11,6 @@ const calcularDatas = (dum) => ({
   obstFim:       addDays(parseISO(dum), 168),
 });
 
-/* ─ util para idade ─ */
 const calcIdade = (dataNasc) => {
   if (!dataNasc) return "";
   const hoje   = new Date();
@@ -24,23 +22,21 @@ const calcIdade = (dataNasc) => {
 };
 
 export default function AlterarFormulario() {
-  /* pego o id direto da rota: /alterar-formulario/:id   */
   const { id }   = useParams();
   const navigate = useNavigate();
 
   const [dados, setDados] = useState({
     id: "",
+    telefone: "",
     nome: "",
     nascimento: "",
     dum: "",
-    exameObst: "",
     statusObst: "",
-    exameTrans: "",
     statusTrans: "",
     idade: "",
+    observacao: ""
   });
 
-  /* ───────────────────────────────────────── fetch ─ */
   useEffect(() => {
     if (!id) return;
 
@@ -50,55 +46,50 @@ export default function AlterarFormulario() {
         return r.json();
       })
       .then((g) => {
-        /* converto datas para yyyy‑mm‑dd (input type=date exige) */
         const fmt = (d) => (d ? d.split("T")[0] : "");
 
         setDados({
           id:            g.id_gestante,
           nome:          g.nome_gestante || "",
+          telefone:      g.telefone_gestante || "",
           nascimento:    fmt(g.data_nasc),
           dum:           fmt(g.dum),
-          exameObst:     fmt(g.data_exame_o),
-          statusObst:    (g.status_obstetrico ?? 1).toString(),
-          exameTrans:    fmt(g.data_exame_t),
-          statusTrans:   (g.status_transnucal ?? 1).toString(),
+          statusObst:    g.status_obstetrico != null ? g.status_obstetrico.toString() : "1",
+          statusTrans:   g.status_transnucal != null ? g.status_transnucal.toString() : "1",
           idade:         calcIdade(g.data_nasc),
+          observacao:    g.observacoes || ""
         });
       })
       .catch((err) => {
         alert(err.message);
-        navigate("/alterar");          // volta para lista se erro
+        navigate("/alterar");
       });
   }, [id, navigate]);
 
-  /* ─────────────────────────────────── handlers ─ */
   const handleChange = (e) => {
     const { id: fld, value } = e.target;
     setDados((p) => ({
       ...p,
       [fld]: value,
-      ...(fld === "nascimento" && { idade: calcIdade(value) }),
+      ...(fld === "nascimento" && { idade: calcIdade(value) })
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    /* recalcula blocos — se DUM foi alterada */
     const datas = calcularDatas(dados.dum);
 
-    /* prepara payload pro back */
     const body = {
       nome_gestante: dados.nome,
+      telefone_gestante: dados.telefone,
       data_nasc:     dados.nascimento,
+      idade_gestante: parseInt(dados.idade, 10),
       dum:           dados.dum,
-      data_exame_o:  dados.exameObst || null,
       status_obstetrico: parseInt(dados.statusObst, 10),
-      data_exame_t:  dados.exameTrans || null,
       status_transnucal:  parseInt(dados.statusTrans, 10),
-
-      /* datas recalculadas */
-      ...datas,
+      observacao:     dados.observacao,
+      ...datas
     };
 
     fetch(`http://localhost:3001/gestantes/${dados.id}`, {
@@ -114,7 +105,6 @@ export default function AlterarFormulario() {
       .catch((err) => alert(err.message));
   };
 
-  /* ────────────────────────────────── UI ─ */
   return (
     <div className="alterar-formulario-container">
       <header>Sistema de Cadastro de Gestantes</header>
@@ -123,11 +113,16 @@ export default function AlterarFormulario() {
         <p className="consulta-title">Atualização dos Dados</p>
 
         <form onSubmit={handleSubmit}>
-          <input type="hidden" id="id" value={dados.id_gestante} />
+          <input type="hidden" id="id" value={dados.id} />
 
           <div>
             <label htmlFor="nome">Nome:</label>
             <input id="nome" value={dados.nome} onChange={handleChange} required />
+          </div>
+
+          <div>
+            <label htmlFor="telefone">Telefone:</label>
+            <input id="telefone" value={dados.telefone} onChange={handleChange} required />
           </div>
 
           <div>
@@ -146,29 +141,24 @@ export default function AlterarFormulario() {
           </div>
 
           <div>
-            <label htmlFor="exameObst">Exame Obstétrico:</label>
-            <input type="date" id="exameObst" value={dados.exameObst} onChange={handleChange} readOnly/>
-          </div>
-
-          <div>
             <label htmlFor="statusObst">Status Obstétrico:</label>
             <select id="statusObst" value={dados.statusObst} onChange={handleChange}>
-              <option value="1">Ativo</option>
-              <option value="0">Inativo</option>
+              <option value="1">✅ Agendado</option>
+              <option value="0">🟥 Nao agendado</option>
             </select>
-          </div>
-
-          <div>
-            <label htmlFor="exameTrans">Exame Transnucal:</label>
-            <input type="date" id="exameTrans" value={dados.exameTrans} onChange={handleChange} readOnly/>
           </div>
 
           <div>
             <label htmlFor="statusTrans">Status Transnucal:</label>
             <select id="statusTrans" value={dados.statusTrans} onChange={handleChange}>
-              <option value="1">Ativo</option>
-              <option value="0">Inativo</option>
+              <option value="1">✅ Agendado</option>
+              <option value="0">🟥 Nao agendado</option>
             </select>
+          </div>
+
+          <div>
+            <label htmlFor="observacao">Observações:</label>
+            <input id="observacao" value={dados.observacao} onChange={handleChange} rows="3" />
           </div>
 
           <button type="submit" className="btn">Alterar</button>

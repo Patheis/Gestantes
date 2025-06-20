@@ -53,6 +53,7 @@ app.get("/gestantes", (req, res) => {
     SELECT 
       g.id_gestante,
       g.nome_gestante,
+      g.dum,
       g.data_nasc,
       g.telefone_gestante,
       
@@ -88,7 +89,13 @@ app.get("/gestantes", (req, res) => {
 app.get("/gestantes/:id", (req, res) => {
   const { id } = req.params;
   const sql = `
-    SELECT g.*, gs.*, eo.*, et.*
+    SELECT 
+      g.*, 
+      gs.*, 
+      eo.data_exame_o,
+      eo.status AS status_obstetrico, 
+      et.data_exame_t,
+      et.status AS status_transnucal
     FROM gestante g
     LEFT JOIN gestacao gs ON gs.fk_id_gestante = g.id_gestante
     LEFT JOIN exames ex ON ex.fk_id_gestacao = gs.id_gestacao
@@ -104,6 +111,7 @@ app.get("/gestantes/:id", (req, res) => {
       : res.status(404).json({ msg: "Gestante não encontrada" })
   );
 });
+
 
 app.post("/gestantes", (req, res) => {
   const { nome_gestante, data_nasc, idade_gestante, dum, telefone_gestante, observacao } = req.body;
@@ -160,82 +168,88 @@ app.post("/gestantes", (req, res) => {
 });
 
 
-/* ─── PUT /gestantes/:id ─────────────────────────────────────── */
-app.put('/gestantes/:id', (req, res) => {
+/* ─── PUT /gestantes/:id ───────────────────────────────────────  DAQUI PRA BAIXO*/
+
+
+/* PUT /gestantes/:id  */
+app.put("/gestantes/:id", (req, res) => {
   const { id } = req.params;
+
+  /* --------- valores vindos do front --------- */
   const {
     nome_gestante,
     data_nasc,
+    idade_gestante,
     dum,
-    data_exame_o,
+    telefone_gestante,
     status_obstetrico,
-    data_exame_t,
     status_transnucal,
-    partoPrevista,
-    transIni,
-    transFim,
-    obstIni,
-    obstFim,
+    observacao = null          // textarea pode vir vazio
   } = req.body;
 
-  const sql = `
-    UPDATE gestantes SET
-      nome_gestante = ?,
-      data_nasc = ?,
-      dum = ?,
-      data_exame_o = ?,
-      status_obstetrico = ?,
-      data_exame_t = ?,
-      status_transnucal = ?,
-      partoPrevista = ?,
-      transIni = ?,
-      transFim = ?,
-      obstIni = ?,
-      obstFim = ?
+  /* --------- calcula TODAS as novas datas --------- */
+  const datas = calcularDatas(dum);           // { partoPrevista, obstIni, transIni, … }
+
+  /* --------- 1. atualiza gestante ---------- */
+  const sqlGestante = `
+    UPDATE gestante
+    SET nome_gestante = ?, data_nasc = ?, idade_gestante = ?,
+        dum = ?, telefone_gestante = ?
     WHERE id_gestante = ?
   `;
+  db.query(
+    sqlGestante,
+    [nome_gestante, data_nasc, idade_gestante, dum, telefone_gestante, id],
+    (err1) => {
+      if (err1) return res.status(500).json({ error: "Erro ao atualizar gestante" });
 
-  const values = [
-    nome_gestante,
-    data_nasc,
-    dum,
-    data_exame_o,
-    status_obstetrico,
-    data_exame_t,
-    status_transnucal,
-    partoPrevista,
-    transIni,
-    transFim,
-    obstIni,
-    obstFim,
-    id
-  ];
+      /* --------- 2. atualiza gestacao ---------- */
+      const sqlGestacao = `
+        UPDATE gestacao
+        SET data_parto_prevista = ?, observacoes = ?
+        WHERE fk_id_gestante = ?
+      `;
+      db.query(sqlGestacao, [datas.partoPrevista, observacao, id], (err2) => {
+        if (err2) return res.status(500).json({ error: "Erro ao atualizar gestação" });
 
-  db.query(sql, values, (err, result) => {
-    if (err) {
-      console.error("Erro ao atualizar gestante:", err);
-      res.status(500).json({ erro: "Erro ao atualizar" });
-    } else {
-      res.status(200).json({ mensagem: "Gestante atualizada com sucesso" });
+        /* --------- 3. atualiza datas & status dos exames ---------- */
+        const sqlExames = `
+          UPDATE exames ex
+          JOIN exame_obstetrico eo ON eo.id_exame_obstetrico = ex.fk_id_exame_obstetrico
+          JOIN exame_transnucal et ON et.id_exame_transnucal = ex.fk_id_exame_transnucal
+          JOIN gestacao g          ON g.id_gestacao        = ex.fk_id_gestacao
+          SET
+            eo.data_exame_o = ?,
+            eo.status       = ?,
+            et.data_exame_t = ?,
+            et.status       = ?
+          WHERE g.fk_id_gestante = ?
+        `;
+        db.query(
+          sqlExames,
+          [datas.obstIni, status_obstetrico, datas.transIni, status_transnucal, id],
+          (err3) => {
+            if (err3) return res.status(500).json({ error: "Erro ao atualizar exames" });
+            res.json({ msg: "Gestante atualizada com sucesso" });
+          }
+        );
+      });
     }
-  });
+  );
 });
+
 
 
 /* ─── PATCH /gestantes/:id/status ────────────────────────────── */
 app.patch("/gestantes/:id/status", (req, res) => {
   const { id } = req.params;
   const { tipo } = req.body;
-
   const tabela = tipo === "obstetrico" ? "exame_obstetrico" : "exame_transnucal";
   const campo = tipo === "obstetrico" ? "id_exame_obstetrico" : "id_exame_transnucal";
-
   db.query(`SELECT status FROM ${tabela} WHERE ${campo}=?`, [id], (err, rows) => {
     if (err) return res.status(500).json({ error: err });
     if (!rows.length) return res.status(404).json({ msg: "Exame não encontrado" });
-
     const novoStatus = rows[0].status === 1 ? 0 : 1;
-
     db.query(`UPDATE ${tabela} SET status=? WHERE ${campo}=?`, [novoStatus, id], (err) => {
       if (err) return res.status(500).json({ error: err });
       res.json({ msg: `Status atualizado para ${novoStatus}` });
@@ -246,13 +260,12 @@ app.patch("/gestantes/:id/status", (req, res) => {
 /* ─── DELETE /gestantes/:id ──────────────────────────────────── */
 app.delete("/gestantes/:id", (req, res) => {
   const { id } = req.params;
-  db.query("DELETE FROM gestante WHERE id_gestante = ?", [id], (err, result) =>
-    err
-      ? res.status(500).json({ error: err })
-      : result.affectedRows
-      ? res.json({ msg: "Gestante excluída com sucesso" })
-      : res.status(404).json({ msg: "Gestante não encontrada" })
-  );
+  db.query("DELETE FROM gestante WHERE id_gestante = ?", [id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    if (!result.affectedRows) return res.status(404).json({ msg: "Gestante não encontrada" });
+    res.json({ msg: "Gestante excluída com sucesso" });
+  });
 });
+
 
 

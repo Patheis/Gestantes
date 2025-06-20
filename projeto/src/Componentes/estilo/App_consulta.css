@@ -80,23 +80,33 @@ main {
   background: #ff1493;
 }
 
-/* tabela */
-.gestante-table {
+/* container para rolagem horizontal */
+.table-container {
   width: 100%;
-  max-width: 1000px;
+  overflow-x: auto;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* tabela principal */
+.gestante-table {
+  width: 2000px;
+  max-width: 100%;
   border-collapse: collapse;
   animation: slideUp 1s ease;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  overflow: hidden;
-  margin-top: 20px;
+  background: white;
 }
 
+/* cabeçalhos e células */
 .gestante-table th,
 .gestante-table td {
-  padding: 14px;
-  font-size: 15px;
+  padding: 20px 16px;
+  font-size: 16px;
   text-align: center;
+  white-space: nowrap; /* evita quebra em colunas como "Telefone" */
 }
 
 .gestante-table th {
@@ -108,11 +118,12 @@ main {
   background: #ffe6ee;
 }
 
+/* status coloridos */
 .badge {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 14px;
   color: #fff;
 }
 
@@ -124,6 +135,7 @@ main {
   background: #dc3545;
 }
 
+/* animação de entrada */
 @keyframes slideUp {
   from {
     transform: translateY(30px);
@@ -134,3 +146,4 @@ main {
     opacity: 1;
   }
 }
+

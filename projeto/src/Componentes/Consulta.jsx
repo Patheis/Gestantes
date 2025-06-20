@@ -9,7 +9,9 @@ const AppConsulta = () => {
   useEffect(() => {
     fetch("http://localhost:3001/gestantes")
       .then(res => res.json())
-      .then(data => setGestantes(data))
+       .then(data => {
+      setGestantes(data);
+    })
       .catch(err => console.error("Erro ao buscar gestantes:", err));
   }, []);
 
@@ -69,6 +71,7 @@ const AppConsulta = () => {
               <th>Nome</th>
               <th>Data Nasc.</th>
               <th>Telefone</th>
+              <th>DUM</th>
               <th>Exame Obstétrico</th>
               <th>Status Obst.</th>
               <th>Exame Transnucal</th>
@@ -83,6 +86,7 @@ const AppConsulta = () => {
                 <td>{g.nome_gestante}</td>
                 <td>{formatarData(g.data_nasc)}</td>
                 <td>{g.telefone_gestante}</td>
+                <td>{formatarData(g.dum)}</td>
                 <td>{formatarData(g.data_exame_o)}</td>
                 <td>
                   <span className={`badge ${g.status_obstetrico ? 'ativo' : 'inativo'}`}>

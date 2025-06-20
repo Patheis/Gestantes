@@ -117,3 +117,9 @@ body {
       from { transform: translateY(30px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+
+   
+.gestante-table th, .gestante-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
